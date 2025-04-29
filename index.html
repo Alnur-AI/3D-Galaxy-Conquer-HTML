@@ -6,18 +6,59 @@
   <style>
     body { margin: 0; overflow: hidden; background: black; }
     canvas { display: block; }
+    #stats-wrapper {
+      position:absolute;
+      top:20px;
+      left:20px;
+      z-index:10;
+      min-width:180px;
+    }
+    #stats-header {
+      background:rgba(0,0,0,0.85);
+      color:#fff;
+      font-family:Arial,sans-serif;
+      font-size:16px;
+      padding:8px 12px 8px 20px;
+      border-radius:10px 10px 0 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      cursor:pointer;
+    }
     #stats {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background: rgba(0,0,0,0.7);
-      color: white;
-      padding: 16px 20px 16px 20px;
-      border-radius: 10px;
-      font-family: Arial, sans-serif;
-      font-size: 16px;
-      min-width: 180px;
-      z-index: 10;
+      background:rgba(0,0,0,0.7);
+      color:#fff;
+      padding:8px 20px 16px 20px;
+      border-radius:0 0 10px 10px;
+      font-family:Arial,sans-serif;
+      font-size:16px;
+    }
+    #matrix-wrapper {
+      position:absolute;
+      top:20px;
+      right:20px;
+      z-index:10;
+      min-width:320px;
+    }
+    #matrix-header {
+      background:rgba(0,0,0,0.85);
+      color:#fff;
+      font-family:Arial,sans-serif;
+      font-size:16px;
+      padding:8px 12px 8px 20px;
+      border-radius:10px 10px 0 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      cursor:pointer;
+    }
+    #relations-matrix {
+      background:rgba(0,0,0,0.7);
+      color:#fff;
+      padding:8px 20px 16px 20px;
+      border-radius:0 0 10px 10px;
+      font-family:Arial,sans-serif;
+      font-size:15px;
     }
     .stat-row {
       display: flex;
@@ -39,11 +80,75 @@
     .stat-count {
       color: #fff;
     }
+    #console-wrapper {
+      position:absolute;
+      bottom:20px;
+      left:20px;
+      z-index:10;
+      min-width:320px;
+      max-width:600px;
+    }
+    #console-header {
+      background:rgba(0,0,0,0.85);
+      color:#fff;
+      font-family:Arial,sans-serif;
+      font-size:16px;
+      padding:8px 12px 8px 20px;
+      border-radius:10px 10px 0 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      cursor:pointer;
+    }
+    #console-panel {
+      background:rgba(0,0,0,0.7);
+      color:#fff;
+      padding:8px 20px 16px 20px;
+      border-radius:0 0 10px 10px;
+      font-family:Arial,sans-serif;
+      font-size:15px;
+      max-height:200px;
+      overflow-y:auto;
+    }
   </style>
 </head>
 <body>
-  <div id="stats"></div>
-  <canvas id="relations" width="400" height="320" style="position:absolute;top:20px;right:20px;z-index:10;background:rgba(0,0,0,0.7);border-radius:10px;"></canvas>
+  <div id="stats-wrapper">
+    <div id="stats-header">
+      <span>Фракции</span>
+      <button id="stats-toggle" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0 4px;">⯈</button>
+    </div>
+    <div id="stats" style="background:rgba(0,0,0,0.7);color:#fff;padding:8px 20px 16px 20px;border-radius:0 0 10px 10px;font-family:Arial,sans-serif;font-size:16px;"></div>
+  </div>
+  <div id="matrix-wrapper">
+    <div id="matrix-header">
+      <span>Матрица захватов</span>
+      <button id="matrix-toggle" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0 4px;">⯈</button>
+    </div>
+    <div id="relations-matrix" style="background:rgba(0,0,0,0.7);color:#fff;padding:8px 20px 16px 20px;border-radius:0 0 10px 10px;font-family:Arial,sans-serif;font-size:15px;"></div>
+  </div>
+  <div id="params-wrapper" style="position:absolute;top:20px;right:360px;z-index:10;min-width:260px;">
+    <div id="params-header" style="background:rgba(0,0,0,0.85);color:#fff;font-family:Arial,sans-serif;font-size:16px;padding:8px 12px 8px 20px;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+      <span>Параметры</span>
+      <button id="params-toggle" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0 4px;">⯈</button>
+    </div>
+    <div id="params-panel" style="background:rgba(0,0,0,0.7);color:#fff;padding:8px 20px 16px 20px;border-radius:0 0 10px 10px;font-family:Arial,sans-serif;font-size:15px;">
+      <label>Количество звёзд: <input id="param-starCount" type="number" min="100" max="50000" step="100" value="10000" style="width:80px;"></label><br>
+      <label>Радиус галактики: <input id="param-galaxyRadius" type="number" min="5" max="100" step="1" value="20" style="width:80px;"></label><br>
+      <label>Фракций: <input id="param-factionCount" type="number" min="2" max="12" step="1" value="6" style="width:80px;"></label><br>
+      <label>Скорость кораблей: <input id="param-shipSpeed" type="number" min="0.01" max="1" step="0.01" value="0.15" style="width:80px;"></label><br>
+      <label>Стоимость захвата: <input id="param-captureCost" type="number" min="1" max="1000" step="1" value="1" style="width:80px;"></label><br>
+      <label>Награда за чужую: <input id="param-captureReward" type="number" min="1" max="1000" step="1" value="1" style="width:80px;"></label><br>
+      <button id="params-apply" style="margin-top:10px;padding:4px 16px;font-size:15px;">Применить</button>
+    </div>
+  </div>
+  <div id="console-wrapper" style="position:absolute;bottom:20px;left:20px;z-index:10;min-width:320px;max-width:600px;">
+    <div id="console-header" style="background:rgba(0,0,0,0.85);color:#fff;font-family:Arial,sans-serif;font-size:16px;padding:8px 12px 8px 20px;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+      <span>Консоль</span>
+      <button id="console-toggle" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0 4px;">⯈</button>
+    </div>
+    <div id="console-panel" style="background:rgba(0,0,0,0.7);color:#fff;padding:8px 20px 16px 20px;border-radius:0 0 10px 10px;font-family:Arial,sans-serif;font-size:15px;max-height:200px;overflow-y:auto;"></div>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
   <script>
     // Сцена, камера, рендерер
@@ -54,7 +159,7 @@
     document.body.appendChild(renderer.domElement);
 
     // Параметры галактики
-    const starCount = 20000;
+    const starCount = 10000;
     const galaxyRadius = 20;
     const arms = 4;
     const armSpread = 0.5;
@@ -164,6 +269,11 @@
       ships[i].resources = 10.0;
     }
 
+    // --- Счётчик очков за захват чужих звёзд ---
+    for (let i = 0; i < factionCount; i++) {
+      ships[i].enemyScore = 0;
+    }
+
     // --- Управление камерой колесиком ---
     let minZoom = 8;
     let maxZoom = 80;
@@ -179,115 +289,80 @@
       galaxyGroup.rotation.y += 0.0015;
       galaxyGroup.rotation.x += 0.0005;
 
+      // --- Логирование в консоль ---
+      let consoleLogs = [];
       for (let i = 0; i < factionCount; i++) {
         const ship = ships[i];
-        // --- Новый маршрут: космолет может лететь только к соседней захваченной звезде или стартовой позиций ---
-        // Список доступных точек для перемещения: стартовая позиция + все уже захваченные звезды
-        let moveFrom = ship.mesh.position.clone();
-        let moveOptions = [shipStartPositions[i]];
-        for (const idx of ship.captured) {
-          const sx = positions[idx*3], sy = positions[idx*3+1], sz = positions[idx*3+2];
-          moveOptions.push(new THREE.Vector3(sx, sy, sz));
+        let lastIdx = null;
+        if (ship.captured.size > 1) {
+          // Последняя захваченная звезда
+          const arr = Array.from(ship.captured);
+          lastIdx = arr[arr.length - 2];
         }
-        // Найти ближайшую точку из moveOptions к текущей позиции
-        let minMoveDist = Infinity;
-        let nearestMove = moveFrom;
-        for (const pt of moveOptions) {
-          const d = ship.mesh.position.distanceTo(pt);
-          if (d < minMoveDist) {
-            minMoveDist = d;
-            nearestMove = pt;
-          }
-        }
-        // Теперь ищем цель только среди звёзд, которые доступны из ближайшей захваченной точки
-        // (то есть, расстояние до цели не больше некоторого радиуса, например 3)
-        let bestIdx = -1;
-        let bestScore = -Infinity;
-        let bestDist = Infinity;
+        let currIdx = null;
+        // Найти ближайшую звезду (куда летит)
+        let bestIdx = -1, bestDist = Infinity, isAttack = false;
         for (let j = 0; j < starCount; j++) {
-          if (starOwners[j] === -1) {
-            const sx = positions[j*3], sy = positions[j*3+1], sz = positions[j*3+2];
-            const starPos = new THREE.Vector3(sx, sy, sz);
-            const distToMove = starPos.distanceTo(nearestMove);
-            if (distToMove < 3) { // только если звезда рядом с уже захваченной
-              const distToShip = starPos.distanceTo(ship.mesh.position);
-              const score = starResources[j] - distToShip * 0.05;
-              if (score > bestScore || (score === bestScore && distToShip < bestDist)) {
-                bestScore = score;
-                bestIdx = j;
-                bestDist = distToShip;
-              }
+          if (starOwners[j] !== i) {
+            const starPos = new THREE.Vector3(positions[j*3], positions[j*3+1], positions[j*3+2]);
+            const dist = starPos.distanceTo(ship.mesh.position);
+            if (dist < bestDist) {
+              bestDist = dist;
+              bestIdx = j;
+              isAttack = (starOwners[j] !== -1);
             }
           }
         }
-        // Если нет доступных свободных, ищем атаку среди соседних чужих звёзд
-        let attackIdx = -1;
-        let attackScore = -Infinity;
-        let attackDist = Infinity;
-        if (bestIdx === -1 && ship.resources >= 5) {
-          for (let j = 0; j < starCount; j++) {
-            if (starOwners[j] !== i) {
-              const sx = positions[j*3], sy = positions[j*3+1], sz = positions[j*3+2];
-              const starPos = new THREE.Vector3(sx, sy, sz);
-              const distToMove = starPos.distanceTo(nearestMove);
-              if (distToMove < 3) {
-                const distToShip = starPos.distanceTo(ship.mesh.position);
-                const score = starResources[j] - distToShip * 0.05 - 8;
-                if (score > attackScore || (score === attackScore && distToShip < attackDist)) {
-                  attackScore = score;
-                  attackIdx = j;
-                  attackDist = distToShip;
-                }
-              }
-            }
-          }
+        currIdx = bestIdx;
+        let distStr = '-';
+        if (lastIdx !== null && currIdx !== null) {
+          const lx = positions[lastIdx*3], ly = positions[lastIdx*3+1], lz = positions[lastIdx*3+2];
+          const cx = positions[currIdx*3], cy = positions[currIdx*3+1], cz = positions[currIdx*3+2];
+          const d = Math.sqrt((lx-cx)**2 + (ly-cy)**2 + (lz-cz)**2);
+          distStr = d.toFixed(2);
         }
-        let targetIdx = bestIdx;
-        let isAttack = false;
-        if (targetIdx === -1 && attackIdx !== -1 && attackScore > 2) {
-          targetIdx = attackIdx;
-          isAttack = true;
-        }
-        // --- Избегание других космолетов ---
-        let avoidVec = new THREE.Vector3(0, 0, 0);
-        let avoidCount = 0;
-        for (let k = 0; k < factionCount; k++) {
-          if (k !== i) {
-            const otherPos = ships[k].mesh.position;
-            const dist = ship.mesh.position.distanceTo(otherPos);
-            if (dist < 5) { // радиус избегания
-              let diff = ship.mesh.position.clone().sub(otherPos).normalize().multiplyScalar(1 / (dist + 0.1));
-              avoidVec.add(diff);
-              avoidCount++;
-            }
-          }
-        }
-        if (avoidCount > 0) {
-          avoidVec.divideScalar(avoidCount);
-        }
+        const color = '#' + factionColors[i].toString(16).padStart(6, '0');
+        consoleLogs.push(`<span style='color:${color};font-weight:bold;'>Ф${i+1}</span>: расстояние до предыдущей: <b style='color:#fff;'>${distStr}</b>, текущая звезда: <b style='color:#fff;'>${currIdx !== null ? currIdx : '-'}</b>`);
+      }
+      updateConsole(consoleLogs);
 
-        if (targetIdx !== -1) {
-          const tx = positions[targetIdx*3], ty = positions[targetIdx*3+1], tz = positions[targetIdx*3+2];
-          const target = new THREE.Vector3(tx, ty, tz);
-          let dir = target.clone().sub(ship.mesh.position);
+      for (let i = 0; i < factionCount; i++) {
+        const ship = ships[i];
+        // Ищем ближайшую звезду (свободную или чужую)
+        let bestIdx = -1, bestDist = Infinity, isAttack = false;
+        for (let j = 0; j < starCount; j++) {
+          if (starOwners[j] !== i) { // не своя
+            const starPos = new THREE.Vector3(positions[j*3], positions[j*3+1], positions[j*3+2]);
+            const dist = starPos.distanceTo(ship.mesh.position);
+            if (dist < bestDist) {
+              bestDist = dist;
+              bestIdx = j;
+              isAttack = (starOwners[j] !== -1); // true если чужая
+            }
+          }
+        }
+        if (bestIdx !== -1) {
+          const moveTarget = new THREE.Vector3(positions[bestIdx*3], positions[bestIdx*3+1], positions[bestIdx*3+2]);
+          let dir = moveTarget.clone().sub(ship.mesh.position);
           const dist = dir.length();
           if (dist > 0.2) {
             dir.normalize();
-            // Добавляем избегание других космолетов
-            if (avoidCount > 0) {
-              dir.add(avoidVec.multiplyScalar(1.5)).normalize();
-            }
             ship.mesh.position.add(dir.multiplyScalar(0.15));
-          } else {
-            if (isAttack && ship.resources >= 5) {
-              ship.resources -= 5;
+          } else if (!ship.captured.has(bestIdx)) {
+            if (isAttack) {
+              if (ship.resources >= 1) {
+                ship.resources -= 1;
+                ships[i].enemyScore += 1;
+              } else {
+                continue;
+              }
             }
-            ship.resources += starResources[targetIdx];
-            if (starOwners[targetIdx] !== -1 && starOwners[targetIdx] !== i) {
-              starPrevOwners[targetIdx] = starOwners[targetIdx];
+            ship.resources += starResources[bestIdx];
+            if (starOwners[bestIdx] !== -1 && starOwners[bestIdx] !== i) {
+              starPrevOwners[bestIdx] = starOwners[bestIdx];
             }
-            starOwners[targetIdx] = i;
-            ship.captured.add(targetIdx);
+            starOwners[bestIdx] = i;
+            ship.captured.add(bestIdx);
           }
         }
         ship.mesh.lookAt(camera.position);
@@ -304,7 +379,7 @@
       colorAttr.needsUpdate = true;
 
       updateStats();
-      drawRelations();
+      drawRelationsMatrix();
       renderer.render(scene, camera);
     }
     animate();
@@ -323,98 +398,260 @@
         const color = '#' + factionColors[i].toString(16).padStart(6, '0');
         const captured = ships[i].captured.size;
         const percent = ((captured / starCount) * 100).toFixed(2);
-        html += `<div class="stat-row"><span class="stat-color" style="background:${color}"></span><span class="stat-label">Фракция ${i+1}</span><span class="stat-count">${captured} (${percent}%)<br>Ресурсы: ${ships[i].resources.toFixed(2)}</span></div>`;
-      }
+        html += `<div class="stat-row"><span class="stat-color" style="background:${color}"></span><span class="stat-label">Фракция ${i+1}</span><span class="stat-count">${captured} (${percent}%)<br>Ресурсы: ${ships[i].resources.toFixed(2)}<br>Очки за чужие: ${ships[i].enemyScore}</span></div>`;      }
       statsDiv.innerHTML = html;
     }
 
-    function drawRelations() {
-      const canvas = document.getElementById('relations');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // Подписи фракций
-      const margin = 60;
-      const nodeRadius = 18;
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const nodePositions = [];
-      for (let i = 0; i < factionCount; i++) {
-        const angle = (i / factionCount) * Math.PI * 2 - Math.PI/2;
-        const x = centerX + Math.cos(angle) * (canvas.width/2 - margin);
-        const y = centerY + Math.sin(angle) * (canvas.height/2 - margin);
-        nodePositions.push({x, y});
-      }
-      // Подсчёт: кто сколько чьих систем захватил
+    function drawRelationsMatrix() {
+      const matrixDiv = document.getElementById('relations-matrix');
+      if (!matrixDiv) return;
+      // Очищаем div перед обновлением
+      matrixDiv.innerHTML = '';
       // relations[a][b] = сколько фракция a захватила у фракции b
       const relations = Array.from({length: factionCount}, () => Array(factionCount).fill(0));
       for (let i = 0; i < starCount; i++) {
         const owner = starOwners[i];
-        if (owner !== -1 && ships[owner].captured.has(i)) {
-          // Найти предыдущего владельца (если был)
-          // Для простоты: если система была захвачена атакой, то она была у другой фракции
-          // Можно хранить историю, но сейчас считаем только текущий захват
-          // relations[owner][prevOwner]++
-          // Здесь не реализовано, т.к. история не ведётся
+        const prev = starPrevOwners[i];
+        if (owner !== -1 && prev !== -1 && owner !== prev) {
+          relations[owner][prev]++;
         }
       }
-      // Но мы можем считать сколько раз фракция потратила ресурсы на атаку (isAttack)
-      // Для этого нужно хранить историю атак
-      if (!window.attackHistory) window.attackHistory = [];
-      // Нарисовать связи
-      for (const attack of window.attackHistory) {
-        const from = attack.attacker;
-        const to = attack.defender;
-        if (from !== to) {
-          relations[from][to]++;
-        }
+      // Формируем HTML-таблицу
+      let html = '<table style="border-collapse:collapse;color:#fff;font-size:15px;">';
+      html += '<tr><th style="border:1px solid #888;padding:4px 8px;background:#222"></th>';
+      for (let j = 0; j < factionCount; j++) {
+        const color = '#' + factionColors[j].toString(16).padStart(6, '0');
+        html += `<th style=\"border:1px solid #888;padding:4px 8px;background:${color};color:#fff;\">Ф${j+1}</th>`;
       }
-      // Рисуем линии
+      html += '</tr>';
       for (let i = 0; i < factionCount; i++) {
+        const color = '#' + factionColors[i].toString(16).padStart(6, '0');
+        html += `<tr><th style=\"border:1px solid #888;padding:4px 8px;background:${color};color:#fff;\">Ф${i+1}</th>`;
         for (let j = 0; j < factionCount; j++) {
-          if (i !== j && relations[i][j] > 0) {
-            const a = nodePositions[i];
-            const b = nodePositions[j];
-            ctx.save();
-            ctx.strokeStyle = '#' + factionColors[i].toString(16).padStart(6, '0');
-            ctx.globalAlpha = 0.3 + 0.7 * Math.min(1, relations[i][j]/5);
-            ctx.lineWidth = 2 + Math.min(8, relations[i][j]);
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-            ctx.restore();
-            // Подпись количества
-            const mx = (a.x + b.x) / 2;
-            const my = (a.y + b.y) / 2;
-            ctx.save();
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 15px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(relations[i][j], mx, my-6);
-            ctx.restore();
-          }
+          html += `<td style=\"border:1px solid #888;padding:4px 8px;text-align:center;min-width:32px;\">${relations[i][j]}</td>`;
         }
+        html += '</tr>';
       }
-      // Рисуем узлы
-      for (let i = 0; i < factionCount; i++) {
-        const pos = nodePositions[i];
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, nodeRadius, 0, Math.PI*2);
-        ctx.fillStyle = '#' + factionColors[i].toString(16).padStart(6, '0');
-        ctx.globalAlpha = 0.9;
-        ctx.fill();
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 15px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('Ф'+(i+1), pos.x, pos.y+5);
-        ctx.restore();
+      html += '</table>';
+      matrixDiv.innerHTML = `<div style='font-weight:bold;margin-bottom:8px;'>Матрица захватов (строка — кто захватил, столбец — кого):</div>` + html;
+    }
+
+    // --- Всплывающая подсказка для звезды ---
+    let tooltip = document.createElement('div');
+    tooltip.style.position = 'absolute';
+    tooltip.style.pointerEvents = 'none';
+    tooltip.style.background = 'rgba(30,30,30,0.95)';
+    tooltip.style.color = '#fff';
+    tooltip.style.padding = '8px 12px';
+    tooltip.style.borderRadius = '8px';
+    tooltip.style.fontSize = '15px';
+    tooltip.style.zIndex = 1000;
+    tooltip.style.display = 'none';
+    document.body.appendChild(tooltip);
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    renderer.domElement.addEventListener('mousemove', (event) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObject(stars);
+      if (intersects.length > 0) {
+        const idx = intersects[0].index;
+        const res = starResources[idx].toFixed(2);
+        const owner = starOwners[idx];
+        const prev = starPrevOwners[idx];
+        let ownerStr = owner !== -1 ? `<span style='color:${'#'+factionColors[owner].toString(16).padStart(6,'0')}'>Фракция ${owner+1}</span>` : 'Нет';
+        let prevStr = prev !== -1 ? `<span style='color:${'#'+factionColors[prev].toString(16).padStart(6,'0')}'>Фракция ${prev+1}</span>` : 'Нет';
+        let cost = owner !== -1 ? 1 : 0;
+        let reward = owner !== -1 ? `+100 очков, +${res} ресурсов` : `+${res} ресурсов`;
+        tooltip.innerHTML = `<b>Звезда #${idx}</b><br>Ресурсы: <b>${res}</b><br>Владелец: ${ownerStr}<br>Предыдущий: ${prevStr}<br>Стоимость захвата: <b>${cost}</b><br>Выгода: <b>${reward}</b>`;
+        tooltip.style.left = (event.clientX + 18) + 'px';
+        tooltip.style.top = (event.clientY + 18) + 'px';
+        tooltip.style.display = 'block';
+      } else {
+        tooltip.style.display = 'none';
       }
+    });
+
+    // --- Кнопки скрытия/раскрытия для таблиц ---
+    let statsCollapsed = false;
+    let matrixCollapsed = false;
+    const statsHeader = document.getElementById('stats-header');
+    const statsToggle = document.getElementById('stats-toggle');
+    const statsDiv = document.getElementById('stats');
+    statsHeader.onclick = function() {
+      statsCollapsed = !statsCollapsed;
+      if (statsCollapsed) {
+        statsDiv.style.display = 'none';
+        statsToggle.innerText = '⯇';
+      } else {
+        statsDiv.style.display = 'block';
+        statsToggle.innerText = '⯈';
+      }
+    };
+    statsToggle.onclick = function(e) { e.stopPropagation(); statsHeader.onclick(); };
+    const matrixHeader = document.getElementById('matrix-header');
+    const matrixToggle = document.getElementById('matrix-toggle');
+    const matrixDiv = document.getElementById('relations-matrix');
+    matrixHeader.onclick = function() {
+      matrixCollapsed = !matrixCollapsed;
+      if (matrixCollapsed) {
+        matrixDiv.style.display = 'none';
+        matrixToggle.innerText = '⯇';
+      } else {
+        matrixDiv.style.display = 'block';
+        matrixToggle.innerText = '⯈';
+      }
+    };
+    matrixToggle.onclick = function(e) { e.stopPropagation(); matrixHeader.onclick(); };
+
+    // --- Кнопка скрытия/раскрытия для панели параметров ---
+    let paramsCollapsed = false;
+    const paramsHeader = document.getElementById('params-header');
+    const paramsToggle = document.getElementById('params-toggle');
+    const paramsPanel = document.getElementById('params-panel');
+    paramsHeader.onclick = function() {
+      paramsCollapsed = !paramsCollapsed;
+      if (paramsCollapsed) {
+        paramsPanel.style.display = 'none';
+        paramsToggle.innerText = '⯇';
+      } else {
+        paramsPanel.style.display = 'block';
+        paramsToggle.innerText = '⯈';
+      }
+    };
+    paramsToggle.onclick = function(e) { e.stopPropagation(); paramsHeader.onclick(); };
+
+    // --- Реакция на изменение параметров ---
+    let userParams = {
+      starCount: 10000,
+      galaxyRadius: 20,
+      factionCount: 6,
+      shipSpeed: 0.15,
+      captureCost: 1,
+      captureReward: 1
+    };
+    document.getElementById('params-apply').onclick = function() {
+      userParams.starCount = parseInt(document.getElementById('param-starCount').value);
+      userParams.galaxyRadius = parseFloat(document.getElementById('param-galaxyRadius').value);
+      userParams.factionCount = parseInt(document.getElementById('param-factionCount').value);
+      userParams.shipSpeed = parseFloat(document.getElementById('param-shipSpeed').value);
+      userParams.captureCost = parseInt(document.getElementById('param-captureCost').value);
+      userParams.captureReward = parseInt(document.getElementById('param-captureReward').value);
+      alert('Изменения вступят в силу после перезагрузки страницы.');
+      // Для полной динамики требуется пересоздать сцену, что не реализовано в этом примере.
+    };
+
+    // --- Перетаскивание панели параметров за верхнюю полоску ---
+    (function() {
+      const panel = document.getElementById('params-wrapper');
+      const header = document.getElementById('params-header');
+      let isDragging = false;
+      let offsetX = 0, offsetY = 0;
+      header.style.cursor = 'move';
+      header.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        offsetX = e.clientX - panel.offsetLeft;
+        offsetY = e.clientY - panel.offsetTop;
+        document.body.style.userSelect = 'none';
+      });
+      document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+          panel.style.left = (e.clientX - offsetX) + 'px';
+          panel.style.top = (e.clientY - offsetY) + 'px';
+          panel.style.right = 'auto';
+        }
+      });
+      document.addEventListener('mouseup', function() {
+        isDragging = false;
+        document.body.style.userSelect = '';
+      });
+    })();
+    // --- Перетаскивание панели фракций за верхнюю полоску ---
+    (function() {
+      const panel = document.getElementById('stats-wrapper');
+      const header = document.getElementById('stats-header');
+      let isDragging = false;
+      let offsetX = 0, offsetY = 0;
+      header.style.cursor = 'move';
+      header.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        offsetX = e.clientX - panel.offsetLeft;
+        offsetY = e.clientY - panel.offsetTop;
+        document.body.style.userSelect = 'none';
+      });
+      document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+          panel.style.left = (e.clientX - offsetX) + 'px';
+          panel.style.top = (e.clientY - offsetY) + 'px';
+          panel.style.left = Math.max(0, parseInt(panel.style.left)) + 'px';
+          panel.style.top = Math.max(0, parseInt(panel.style.top)) + 'px';
+          panel.style.right = 'auto';
+        }
+      });
+      document.addEventListener('mouseup', function() {
+        isDragging = false;
+        document.body.style.userSelect = '';
+      });
+    })();
+    // --- Перетаскивание панели матрицы захватов за верхнюю полоску ---
+    (function() {
+      const panel = document.getElementById('matrix-wrapper');
+      const header = document.getElementById('matrix-header');
+      let isDragging = false;
+      let offsetX = 0, offsetY = 0;
+      header.style.cursor = 'move';
+      header.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        offsetX = e.clientX - panel.offsetLeft;
+        offsetY = e.clientY - panel.offsetTop;
+        document.body.style.userSelect = 'none';
+      });
+      document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+          panel.style.left = (e.clientX - offsetX) + 'px';
+          panel.style.top = (e.clientY - offsetY) + 'px';
+          panel.style.left = Math.max(0, parseInt(panel.style.left)) + 'px';
+          panel.style.top = Math.max(0, parseInt(panel.style.top)) + 'px';
+          panel.style.right = 'auto';
+        }
+      });
+      document.addEventListener('mouseup', function() {
+        isDragging = false;
+        document.body.style.userSelect = '';
+      });
+    })();
+    // --- Перетаскивание консоли за верхнюю полоску ---
+    (function() {
+      const panel = document.getElementById('console-wrapper');
+      const header = document.getElementById('console-header');
+      let isDragging = false;
+      let offsetX = 0, offsetY = 0;
+      header.style.cursor = 'move';
+      header.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        offsetX = e.clientX - panel.offsetLeft;
+        offsetY = e.clientY - panel.offsetTop;
+        document.body.style.userSelect = 'none';
+      });
+      document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+          panel.style.left = (e.clientX - offsetX) + 'px';
+          panel.style.top = (e.clientY - offsetY) + 'px';
+          panel.style.right = 'auto';
+        }
+      });
+      document.addEventListener('mouseup', function() {
+        isDragging = false;
+        document.body.style.userSelect = '';
+      });
+    })();
+
+    function updateConsole(logs) {
+      const panel = document.getElementById('console-panel');
+      panel.innerHTML = logs.map(row => `<div>${row}</div>`).join('');
+      panel.scrollTop = panel.scrollHeight;
     }
   </script>
 </body>
